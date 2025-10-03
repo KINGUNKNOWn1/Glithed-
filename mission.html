@@ -1068,7 +1068,7 @@
             <div class="timer-label">Waiting for +$10K Market Cap...</div>
             <div class="reward-timer" id="rewardTimer">LOCKED</div>
             <button class="claim-reward-btn" id="claimRewardBtn" onclick="claimReward()" disabled>CLAIM REWARD</button>
-            <div class="reward-amount" id="rewardAmount">Reward: 5000 CYBR</div>
+            <div class="reward-amount" id="rewardAmount">Reward: 0.05 SOL</div>
 
             <!-- Code Section (Hidden until reward is claimed) -->
             <div id="codeSection" style="display: none;">
@@ -1407,8 +1407,8 @@
 
         // Store total rewards earned
         let totalRewardsEarned = 0;
-        let currentRewardAmount = 5000; // Start at 5000 CYBR
-        let rewardIncrement = 1500; // Increase by 1500 each time
+        let currentRewardAmount = 0.05; // Start at 0.05 SOL
+        let rewardIncrement = 0.05; // Increase by 0.05 SOL each time
         let totalClaims = 0; // Track number of claims
 
         function unlockReward() {
@@ -1454,7 +1454,7 @@
             // Show success message
             const messageEl = document.getElementById('codeMessage');
             messageEl.className = 'code-message success';
-            messageEl.textContent = `✅ REWARD CLAIMED! +${rewardAmount} CYBR | You have 3 seconds to enter code!`;
+            messageEl.textContent = `✅ REWARD CLAIMED! +${rewardAmount} SOL | You have 3 seconds to enter code!`;
 
             // Hide code section after 3 seconds
             setTimeout(() => {
@@ -1470,7 +1470,7 @@
 
             // Increase reward for next time
             currentRewardAmount += rewardIncrement;
-            document.getElementById('rewardAmount').textContent = `Reward: ${currentRewardAmount} CYBR`;
+            document.getElementById('rewardAmount').textContent = `Reward: ${currentRewardAmount.toFixed(2)} SOL`;
         }
 
         // Code System
@@ -1524,11 +1524,11 @@
                 // Play laser sound for valid code
                 playLaserSound();
 
-                const reward = Math.floor(Math.random() * 5000) + 1000;
+                const reward = parseFloat((Math.random() * 0.1 + 0.05).toFixed(2)); // Random between 0.05-0.15 SOL
                 totalRewardsEarned += reward;
 
                 messageEl.className = 'code-message success';
-                messageEl.textContent = `✅ Success! +${reward} CYBR tokens!`;
+                messageEl.textContent = `✅ Success! +${reward} SOL!`;
                 input.value = '';
 
                 // Change mission status to COMPLETED
@@ -1595,7 +1595,7 @@
 
                 if (response.ok) {
                     messageEl.className = 'wallet-message success';
-                    messageEl.textContent = `✅ Wallet submitted! Total earned: ${totalRewardsEarned} CYBR`;
+                    messageEl.textContent = `✅ Wallet submitted! Total earned: ${totalRewardsEarned.toFixed(2)} SOL`;
                     walletInput.value = '';
                     walletInput.disabled = true;
 
