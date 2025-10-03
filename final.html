@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FULL ACCESS GRANTED</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .final-screen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .final-title {
+            font-size: 64px;
+            color: #00ff00;
+            text-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00;
+            margin-bottom: 30px;
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                text-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00;
+                transform: scale(1);
+            }
+            50% {
+                text-shadow: 0 0 50px #00ff00, 0 0 100px #00ff00;
+                transform: scale(1.05);
+            }
+        }
+
+        .final-subtitle {
+            font-size: 28px;
+            color: #00aa00;
+            margin-bottom: 40px;
+        }
+
+        .final-message {
+            font-size: 18px;
+            color: #0f0;
+            line-height: 2;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .home-button {
+            margin-top: 40px;
+            padding: 15px 40px;
+            background: rgba(0, 100, 0, 0.5);
+            border: 2px solid #0f0;
+            color: #0f0;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #0f0;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .home-button:hover {
+            background: rgba(0, 150, 0, 0.7);
+            box-shadow: 0 0 30px #0f0;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+    <div id="background"></div>
+
+    <div class="final-screen">
+        <div class="final-title">FULL ACCESS GRANTED</div>
+        <div class="final-subtitle">WELCOME TO THE MAINFRAME</div>
+        <div class="final-message">
+            ✓ All security protocols bypassed<br>
+            ✓ Root access obtained<br>
+            ✓ Database unlocked<br>
+            ✓ System control achieved<br>
+        </div>
+        <a href="index.html" class="home-button">RETURN TO START</a>
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const matrixCtx = matrixCanvas.getContext('2d');
+
+        function resizeMatrixCanvas() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+            const cols = Math.floor(matrixCanvas.width / matrixFontSize);
+            while (matrixDrops.length < cols) {
+                matrixDrops.push(Math.random() * -100);
+            }
+            while (matrixDrops.length > cols) {
+                matrixDrops.pop();
+            }
+        }
+
+        const matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        const matrixFontSize = 20;
+        const matrixDrops = [];
+
+        resizeMatrixCanvas();
+        window.addEventListener('resize', resizeMatrixCanvas);
+
+        function drawMatrix() {
+            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+            const cols = Math.floor(matrixCanvas.width / matrixFontSize);
+            for (let i = 0; i < cols; i++) {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                const y = matrixDrops[i] * matrixFontSize;
+
+                matrixCtx.fillStyle = '#0F0';
+                matrixCtx.font = `${matrixFontSize}px monospace`;
+                matrixCtx.fillText(text, i * matrixFontSize, y);
+
+                matrixCtx.shadowBlur = 8;
+                matrixCtx.shadowColor = '#0F0';
+                matrixCtx.fillText(text, i * matrixFontSize, y);
+                matrixCtx.shadowBlur = 0;
+
+                if (matrixDrops[i] * matrixFontSize > matrixCanvas.height && Math.random() > 0.975) {
+                    matrixDrops[i] = 0;
+                }
+                matrixDrops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+    </script>
+</body>
+</html>

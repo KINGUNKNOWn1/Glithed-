@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Granted - Secure Terminal</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .welcome-screen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .welcome-title {
+            font-size: 48px;
+            color: #00ff00;
+            text-shadow: 0 0 20px #00ff00;
+            margin-bottom: 20px;
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 20px #00ff00; }
+            50% { text-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00; }
+        }
+
+        .welcome-subtitle {
+            font-size: 24px;
+            color: #00aa00;
+            margin-bottom: 30px;
+        }
+
+        .secure-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .secure-panel {
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #0f0;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            color: #00ff00;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+        }
+
+        .data-item {
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(0, 50, 0, 0.3);
+            border-left: 3px solid #0f0;
+        }
+
+        .data-label {
+            color: #00aa00;
+            font-weight: bold;
+        }
+
+        .data-value {
+            color: #0f0;
+            margin-left: 10px;
+        }
+
+        .classified {
+            color: #ff0000;
+            text-shadow: 0 0 5px #ff0000;
+            animation: blinkRed 2s infinite;
+        }
+
+        @keyframes blinkRed {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
+        .log-entry {
+            font-size: 12px;
+            color: #0f0;
+            margin: 3px 0;
+            opacity: 0.8;
+        }
+
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            background: rgba(0, 100, 0, 0.5);
+            border: 2px solid #0f0;
+            color: #0f0;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #0f0;
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 150, 0, 0.7);
+            box-shadow: 0 0 20px #0f0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+    <div id="background"></div>
+
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-title">ACCESS GRANTED</div>
+        <div class="welcome-subtitle">ENTERING SECURE SYSTEM...</div>
+    </div>
+
+    <div class="secure-grid" id="secureGrid" style="display: none;">
+        <!-- Database Panel -->
+        <div class="secure-panel">
+            <div class="panel-title">DATABASE ACCESS</div>
+            <div class="data-item">
+                <span class="data-label">USER_ID:</span>
+                <span class="data-value">ADMIN_7845</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">CLEARANCE:</span>
+                <span class="data-value classified">TOP SECRET</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">LOCATION:</span>
+                <span class="data-value">SECTOR-7 MAINFRAME</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">LAST_ACCESS:</span>
+                <span class="data-value" id="accessTime"></span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">SESSION_ID:</span>
+                <span class="data-value" id="sessionId"></span>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <input type="text" id="codeInput" placeholder="Enter security code..." style="background: rgba(0, 0, 0, 0.8); border: 1px solid #0f0; color: #0f0; padding: 10px; font-family: 'Courier New', monospace; text-transform: uppercase; width: 90%; text-align: center; font-size: 16px; letter-spacing: 2px;">
+            </div>
+        </div>
+
+        <!-- System Logs Panel -->
+        <div class="secure-panel">
+            <div class="panel-title">SYSTEM LOGS</div>
+            <div id="systemLogs"></div>
+        </div>
+
+        <!-- Network Traffic Panel -->
+        <div class="secure-panel">
+            <div class="panel-title">NETWORK TRAFFIC</div>
+            <div id="networkTraffic"></div>
+        </div>
+
+        <!-- Active Processes Panel -->
+        <div class="secure-panel">
+            <div class="panel-title">ACTIVE PROCESSES</div>
+            <div id="activeProcesses"></div>
+        </div>
+    </div>
+
+    <button class="back-button" onclick="window.location.href='index.html'">EXIT SYSTEM</button>
+
+    <script>
+        // Hide welcome screen after 3 seconds
+        setTimeout(() => {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('secureGrid').style.display = 'grid';
+        }, 3000);
+
+        // Set access time
+        const now = new Date();
+        document.getElementById('accessTime').textContent = now.toLocaleString();
+
+        // Generate random session ID
+        function generateSessionId() {
+            return 'SES-' + Math.random().toString(36).substring(2, 15).toUpperCase();
+        }
+        document.getElementById('sessionId').textContent = generateSessionId();
+
+        // Security code generation
+        let currentSecurityCode = '';
+
+        function generateSecurityCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        function updateSecurityCode() {
+            currentSecurityCode = generateSecurityCode();
+
+            // Add red code to system logs
+            const logsDiv = document.getElementById('systemLogs');
+            const log = document.createElement('div');
+            log.className = 'log-entry';
+            log.style.color = '#ff0000';
+            log.style.fontWeight = 'bold';
+            log.style.textShadow = '0 0 5px #ff0000';
+            const timestamp = new Date().toLocaleTimeString();
+            log.textContent = `[${timestamp}] SECURITY CODE: ${currentSecurityCode}`;
+            logsDiv.insertBefore(log, logsDiv.firstChild);
+
+            // Keep only last 20 logs
+            while (logsDiv.children.length > 20) {
+                logsDiv.removeChild(logsDiv.lastChild);
+            }
+        }
+
+        // Generate first code immediately
+        updateSecurityCode();
+        // Generate new code every 15 seconds
+        setInterval(updateSecurityCode, 15000);
+
+        // Handle code input
+        const codeInput = document.getElementById('codeInput');
+        codeInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const inputValue = codeInput.value.trim().toUpperCase();
+                if (inputValue === currentSecurityCode) {
+                    // Code is correct - redirect to next page
+                    codeInput.disabled = true;
+                    codeInput.value = '✓ VERIFIED';
+                    codeInput.style.borderColor = '#00ff00';
+                    codeInput.style.color = '#00ff00';
+                    setTimeout(() => {
+                        window.location.href = 'final.html';
+                    }, 1500);
+                } else {
+                    // Code is wrong
+                    codeInput.value = '';
+                    codeInput.style.borderColor = '#ff0000';
+                    setTimeout(() => {
+                        codeInput.style.borderColor = '#0f0';
+                    }, 1000);
+                }
+            }
+        });
+
+        // System logs
+        const logMessages = [
+            'Connection established from IP: 192.168.1.1',
+            'Authentication successful - User: ADMIN',
+            'Database query executed: SELECT * FROM classified',
+            'Firewall rule modified: PORT 443 OPEN',
+            'File accessed: /secure/documents/project_aurora.dat',
+            'Encryption key generated: RSA-4096',
+            'Backup initiated: /secure/backup/daily_2024',
+            'Permission granted: ROOT ACCESS',
+            'Network packet intercepted: 10.0.0.1',
+            'Alert: Unusual activity detected at 03:47:21'
+        ];
+
+        function addLog() {
+            const logsDiv = document.getElementById('systemLogs');
+            const log = document.createElement('div');
+            log.className = 'log-entry';
+            const timestamp = new Date().toLocaleTimeString();
+            log.textContent = `[${timestamp}] ${logMessages[Math.floor(Math.random() * logMessages.length)]}`;
+            logsDiv.insertBefore(log, logsDiv.firstChild);
+
+            // Keep only last 20 logs
+            while (logsDiv.children.length > 20) {
+                logsDiv.removeChild(logsDiv.lastChild);
+            }
+        }
+
+        // Network traffic
+        function addTraffic() {
+            const trafficDiv = document.getElementById('networkTraffic');
+            const traffic = document.createElement('div');
+            traffic.className = 'log-entry';
+            const ip = `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+            const port = Math.floor(Math.random() * 65535);
+            const bytes = Math.floor(Math.random() * 10000);
+            traffic.textContent = `${ip}:${port} → ${bytes} bytes transferred`;
+            trafficDiv.insertBefore(traffic, trafficDiv.firstChild);
+
+            while (trafficDiv.children.length > 20) {
+                trafficDiv.removeChild(trafficDiv.lastChild);
+            }
+        }
+
+        // Active processes
+        const processes = [
+            'ssh_daemon.exe',
+            'database_sync.exe',
+            'encrypt_handler.exe',
+            'firewall_monitor.exe',
+            'packet_analyzer.exe',
+            'auth_service.exe',
+            'backup_scheduler.exe',
+            'network_scanner.exe'
+        ];
+
+        function addProcess() {
+            const processDiv = document.getElementById('activeProcesses');
+            const process = document.createElement('div');
+            process.className = 'log-entry';
+            const pid = Math.floor(Math.random() * 99999);
+            const cpu = (Math.random() * 100).toFixed(1);
+            const mem = (Math.random() * 1000).toFixed(1);
+            process.textContent = `PID:${pid} | ${processes[Math.floor(Math.random() * processes.length)]} | CPU:${cpu}% MEM:${mem}MB`;
+            processDiv.insertBefore(process, processDiv.firstChild);
+
+            while (processDiv.children.length > 20) {
+                processDiv.removeChild(processDiv.lastChild);
+            }
+        }
+
+        // Update intervals
+        setInterval(addLog, 2000);
+        setInterval(addTraffic, 1500);
+        setInterval(addProcess, 3000);
+
+        // Initial population
+        for (let i = 0; i < 10; i++) {
+            addLog();
+            addTraffic();
+            addProcess();
+        }
+
+        // Matrix Rain Effect
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const matrixCtx = matrixCanvas.getContext('2d');
+
+        function resizeMatrixCanvas() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+            // Reinitialize drops when resizing
+            const cols = Math.floor(matrixCanvas.width / matrixFontSize);
+            while (matrixDrops.length < cols) {
+                matrixDrops.push(Math.random() * -100);
+            }
+            while (matrixDrops.length > cols) {
+                matrixDrops.pop();
+            }
+        }
+
+        const matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        const matrixFontSize = 20;
+        const matrixDrops = [];
+
+        // Initialize canvas and drops
+        resizeMatrixCanvas();
+        window.addEventListener('resize', resizeMatrixCanvas);
+
+        function drawMatrix() {
+            // Darker fade for longer trails
+            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+            const cols = Math.floor(matrixCanvas.width / matrixFontSize);
+            for (let i = 0; i < cols; i++) {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+
+                // Brighter head of the rain
+                const y = matrixDrops[i] * matrixFontSize;
+
+                // Draw bright character at head
+                matrixCtx.fillStyle = '#0F0';
+                matrixCtx.font = `${matrixFontSize}px monospace`;
+                matrixCtx.fillText(text, i * matrixFontSize, y);
+
+                // Add glow effect
+                matrixCtx.shadowBlur = 8;
+                matrixCtx.shadowColor = '#0F0';
+                matrixCtx.fillText(text, i * matrixFontSize, y);
+                matrixCtx.shadowBlur = 0;
+
+                if (matrixDrops[i] * matrixFontSize > matrixCanvas.height && Math.random() > 0.975) {
+                    matrixDrops[i] = 0;
+                }
+                matrixDrops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+    </script>
+</body>
+</html>

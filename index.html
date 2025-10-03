@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberpunk Hacker Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+    <div id="background"></div>
+
+    <!-- Main Terminal Window -->
+    <div class="window terminal-window" id="mainTerminal">
+        <div class="window-header">
+            <span class="window-title">SYSTEM_TERMINAL_V2.4</span>
+            <div class="window-controls">
+                <span class="control minimize">_</span>
+                <span class="control maximize">□</span>
+                <span class="control close">×</span>
+            </div>
+        </div>
+        <div class="window-content terminal-content">
+            <div id="output"></div>
+            <div class="input-line">
+                <span class="prompt">root@cyberpunk:~$</span>
+                <input type="text" id="terminalInput" class="terminal-input" maxlength="6" placeholder="Enter code..." autocomplete="off" autofocus>
+            </div>
+        </div>
+    </div>
+
+    <!-- Encrypting Window -->
+    <div class="window encrypting-window" id="encryptWindow" style="left: 60%; top: 10%;">
+        <div class="window-header">
+            <span class="window-title">ENCRYPTION_MODULE</span>
+        </div>
+        <div class="window-content">
+            <div class="encrypt-status">
+                <div class="status-text">ENCRYPTING DATA...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="encryptProgress"></div>
+                </div>
+                <div class="encrypt-output" id="encryptOutput"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Monitor Window -->
+    <div class="window monitor-window" id="monitorWindow" style="left: 5%; top: 50%;">
+        <div class="window-header">
+            <span class="window-title">SYSTEM_MONITOR</span>
+        </div>
+        <div class="window-content">
+            <div class="monitor-grid">
+                <div class="monitor-item">
+                    <span class="monitor-label">CPU:</span>
+                    <span class="monitor-value" id="cpu">0%</span>
+                </div>
+                <div class="monitor-item">
+                    <span class="monitor-label">RAM:</span>
+                    <span class="monitor-value" id="ram">0%</span>
+                </div>
+                <div class="monitor-item">
+                    <span class="monitor-label">NET:</span>
+                    <span class="monitor-value" id="net">0 MB/s</span>
+                </div>
+                <div class="monitor-item">
+                    <span class="monitor-label">STATUS:</span>
+                    <span class="monitor-value status-active">ACTIVE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Access Granted/Denied Overlay -->
+    <div id="accessOverlay" class="access-overlay hidden">
+        <div class="access-text"></div>
+    </div>
+
+    <!-- Glitch Effect Overlay -->
+    <div id="glitchOverlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

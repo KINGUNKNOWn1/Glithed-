@@ -1,0 +1,377 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: #000;
+    color: #0f0;
+    overflow: hidden;
+    cursor: crosshair;
+}
+
+#matrixCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+}
+
+#background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Window Styling */
+.window {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid #0f0;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), inset 0 0 20px rgba(0, 255, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.window-header {
+    background: linear-gradient(180deg, #0a3d0a 0%, #051f05 100%);
+    padding: 8px 12px;
+    border-bottom: 1px solid #0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    user-select: none;
+}
+
+.window-title {
+    color: #0f0;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 0 0 5px #0f0;
+    letter-spacing: 2px;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control {
+    color: #0f0;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 5px;
+    transition: all 0.2s;
+}
+
+.control:hover {
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+.window-content {
+    padding: 15px;
+}
+
+/* Terminal Window */
+.terminal-window {
+    left: 10%;
+    top: 10%;
+    width: 45%;
+    height: 400px;
+}
+
+.terminal-content {
+    height: calc(100% - 40px);
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#output {
+    margin-bottom: 10px;
+}
+
+.output-line {
+    margin: 2px 0;
+    animation: fadeIn 0.1s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.user-input {
+    color: #00aaff;
+    font-weight: bold;
+}
+
+.success {
+    color: #00ff00;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.error {
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+.input-line {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.prompt {
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+.terminal-input {
+    flex: 1;
+    background: rgba(0, 50, 0, 0.5);
+    border: 1px solid #0f0;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    padding: 5px 10px;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.terminal-input:focus {
+    border-color: #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5), inset 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.terminal-input::placeholder {
+    color: #006600;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+#cursor {
+    color: #0f0;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Encrypting Window */
+.encrypting-window {
+    width: 350px;
+    height: 250px;
+}
+
+.encrypt-status {
+    text-align: center;
+}
+
+.status-text {
+    color: #ff0000;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ff0000;
+    margin-bottom: 20px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: #001100;
+    border: 1px solid #0f0;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #00aa00);
+    width: 0%;
+    transition: width 0.3s;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+.encrypt-output {
+    font-size: 12px;
+    color: #0f0;
+    word-wrap: break-word;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+/* System Monitor Window */
+.monitor-window {
+    width: 300px;
+    height: 200px;
+}
+
+.monitor-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.monitor-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: rgba(0, 50, 0, 0.3);
+    border: 1px solid #0a5c0a;
+    border-radius: 3px;
+}
+
+.monitor-label {
+    color: #00aa00;
+    font-weight: bold;
+}
+
+.monitor-value {
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+}
+
+.status-active {
+    color: #00ff00;
+    animation: statusBlink 2s infinite;
+}
+
+@keyframes statusBlink {
+    0%, 90% { opacity: 1; }
+    95% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+/* Access Overlay */
+.access-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: overlayFadeIn 0.3s;
+}
+
+.access-overlay.hidden {
+    display: none;
+}
+
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.access-text {
+    font-size: 72px;
+    font-weight: bold;
+    text-shadow: 0 0 30px currentColor;
+    animation: textGlitch 0.5s infinite;
+}
+
+.access-granted {
+    color: #00ff00;
+}
+
+.access-denied {
+    color: #ff0000;
+}
+
+@keyframes textGlitch {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-2px, 2px); }
+    50% { transform: translate(2px, -2px); }
+    75% { transform: translate(-2px, -2px); }
+}
+
+/* Glitch Effect */
+#glitchOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0;
+}
+
+.glitch-active {
+    animation: glitchAnimation 0.3s;
+}
+
+@keyframes glitchAnimation {
+    0% {
+        opacity: 0;
+        background: transparent;
+    }
+    10% {
+        opacity: 1;
+        background: rgba(255, 0, 0, 0.1);
+        transform: translate(10px, 5px);
+    }
+    20% {
+        background: rgba(0, 255, 0, 0.1);
+        transform: translate(-10px, -5px);
+    }
+    30% {
+        background: rgba(0, 0, 255, 0.1);
+        transform: translate(5px, -10px);
+    }
+    100% {
+        opacity: 0;
+        background: transparent;
+        transform: translate(0, 0);
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #001100;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0f0;
+    box-shadow: 0 0 5px #0f0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #00ff00;
+}
+
+/* Selection */
+::selection {
+    background: #0f0;
+    color: #000;
+}
