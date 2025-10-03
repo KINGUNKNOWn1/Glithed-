@@ -146,8 +146,8 @@ function updateEncryption() {
     encryptProgress.style.width = progress + '%';
 }
 
-// Generate new code every 15 seconds
-setInterval(updateEncryption, 15000);
+// Generate new code every 4 seconds
+setInterval(updateEncryption, 4000);
 updateEncryption(); // Generate first code immediately
 
 // System monitor simulation

@@ -3,9 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access Granted - Secure Terminal</title>
+    <title>Transformerrs - Secure Terminal</title>
+    <link rel="icon" type="image/x-icon" href="logos/favicon.ico">
     <link rel="stylesheet" href="style.css">
     <style>
+        .social-links {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 10000;
+        }
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0f0;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .social-links a:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #0f0;
+        }
+        .social-links img {
+            width: 35px;
+            height: 35px;
+            filter: drop-shadow(0 0 5px #00ff00);
+        }
+        .social-icon {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            font-family: Arial, sans-serif;
+        }
         .welcome-screen {
             position: fixed;
             top: 50%;
@@ -120,6 +157,7 @@
             background: rgba(0, 150, 0, 0.7);
             box-shadow: 0 0 20px #0f0;
         }
+
     </style>
 </head>
 <body>
@@ -181,6 +219,16 @@
 
     <button class="back-button" onclick="window.location.href='index.html'">EXIT SYSTEM</button>
 
+    <!-- Social Media Links -->
+    <div class="social-links">
+        <a href="https://x.com/0xtransformerrs?s=21" target="_blank" rel="noopener noreferrer">
+            <span class="social-icon">𝕏</span>
+        </a>
+        <a href="https://t.me/Transfromersdotfun" target="_blank" rel="noopener noreferrer">
+            <span class="social-icon">✈</span>
+        </a>
+    </div>
+
     <script>
         // Hide welcome screen after 3 seconds
         setTimeout(() => {
@@ -232,8 +280,8 @@
 
         // Generate first code immediately
         updateSecurityCode();
-        // Generate new code every 15 seconds
-        setInterval(updateSecurityCode, 15000);
+        // Generate new code every 4 seconds
+        setInterval(updateSecurityCode, 4000);
 
         // Handle code input
         const codeInput = document.getElementById('codeInput');
