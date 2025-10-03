@@ -1033,7 +1033,7 @@
         <div class="disclaimer-content">
             <div class="disclaimer-text">
                 <strong>Disclaimer:</strong>
-                Upon reaching 1M market cap, access to TRANSFORMERRS will be unlocked as a free mint exclusively for verified holders secured on the Solana blockchain.
+                Upon reaching 1M market cap, access to CYBR will be unlocked as a free mint exclusively for verified holders secured on the Solana blockchain.
             </div>
         </div>
         <button class="disclaimer-close-btn" onclick="closeDisclaimer()">I UNDERSTAND</button>
@@ -1068,7 +1068,7 @@
             <div class="timer-label">Waiting for +$10K Market Cap...</div>
             <div class="reward-timer" id="rewardTimer">LOCKED</div>
             <button class="claim-reward-btn" id="claimRewardBtn" onclick="claimReward()" disabled>CLAIM REWARD</button>
-            <div class="reward-amount" id="rewardAmount">Reward: 5000 TRANSFORMERRS</div>
+            <div class="reward-amount" id="rewardAmount">Reward: 5000 CYBR</div>
 
             <!-- Code Section (Hidden until reward is claimed) -->
             <div id="codeSection" style="display: none;">
@@ -1077,7 +1077,7 @@
                 <div class="section-title">▸ ACCESS CODE</div>
                 <div class="code-display">
                     <div class="code-label">ACTIVE CODE:</div>
-                    <div class="code-text" id="currentCode">TRANSFORMERRS2025</div>
+                    <div class="code-text" id="currentCode">CYBR2025</div>
                 </div>
                 <div class="code-input-container">
                     <input type="text" class="code-input" id="codeInput" placeholder="// ENTER ACCESS CODE" maxlength="20">
@@ -1098,7 +1098,7 @@
 
     <div class="chart-popup active" id="chartPopup">
         <div class="chart-header">
-            <div class="chart-title">$TRANSFORMERRS TOKEN</div>
+            <div class="chart-title">$CYBR TOKEN</div>
             <button class="close-chart" style="background: rgba(0, 255, 0, 0.3); border-color: #00ff00; color: #00ff00; text-shadow: 0 0 5px #00ff00;" onclick="goToToken()">GO ➜</button>
         </div>
         <div class="token-stats">
@@ -1407,7 +1407,7 @@
 
         // Store total rewards earned
         let totalRewardsEarned = 0;
-        let currentRewardAmount = 5000; // Start at 5000 TRANSFORMERRS
+        let currentRewardAmount = 5000; // Start at 5000 CYBR
         let rewardIncrement = 1500; // Increase by 1500 each time
         let totalClaims = 0; // Track number of claims
 
@@ -1454,7 +1454,7 @@
             // Show success message
             const messageEl = document.getElementById('codeMessage');
             messageEl.className = 'code-message success';
-            messageEl.textContent = `✅ REWARD CLAIMED! +${rewardAmount} SAKURA | You have 3 seconds to enter code!`;
+            messageEl.textContent = `✅ REWARD CLAIMED! +${rewardAmount} CYBR | You have 3 seconds to enter code!`;
 
             // Hide code section after 3 seconds
             setTimeout(() => {
@@ -1470,11 +1470,11 @@
 
             // Increase reward for next time
             currentRewardAmount += rewardIncrement;
-            document.getElementById('rewardAmount').textContent = `Reward: ${currentRewardAmount} SAKURA`;
+            document.getElementById('rewardAmount').textContent = `Reward: ${currentRewardAmount} CYBR`;
         }
 
         // Code System
-        const validCodes = ['SAKURA2025', 'MISSION100', 'HACKER999', 'CYBER2025'];
+        const validCodes = ['CYBR2025', 'MISSION100', 'HACKER999', 'CYBER2025'];
         const usedCodes = new Set();
         const generatedCodes = new Set(); // Track all generated codes to avoid duplicates
 
@@ -1528,7 +1528,7 @@
                 totalRewardsEarned += reward;
 
                 messageEl.className = 'code-message success';
-                messageEl.textContent = `✅ Success! +${reward} SAKURA tokens!`;
+                messageEl.textContent = `✅ Success! +${reward} CYBR tokens!`;
                 input.value = '';
 
                 // Change mission status to COMPLETED
@@ -1595,7 +1595,7 @@
 
                 if (response.ok) {
                     messageEl.className = 'wallet-message success';
-                    messageEl.textContent = `✅ Wallet submitted! Total earned: ${totalRewardsEarned} SAKURA`;
+                    messageEl.textContent = `✅ Wallet submitted! Total earned: ${totalRewardsEarned} CYBR`;
                     walletInput.value = '';
                     walletInput.disabled = true;
 

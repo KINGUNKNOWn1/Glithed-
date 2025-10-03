@@ -7,7 +7,7 @@ const WALLETS_FILE = path.join(__dirname, 'wallets.csv');
 
 // Initialize CSV file if it doesn't exist
 if (!fs.existsSync(WALLETS_FILE)) {
-    fs.writeFileSync(WALLETS_FILE, 'Wallet Address,Total SAKURA Claimed,Number of Claims,Timestamp,Date\n');
+    fs.writeFileSync(WALLETS_FILE, 'Wallet Address,Total CYBR Claimed,Number of Claims,Timestamp,Date\n');
     console.log('Created wallets.csv file');
 }
 
@@ -52,7 +52,7 @@ const server = http.createServer((req, res) => {
                 const csvLine = `${wallet},${sakuraAmount},${claimCount},${timestamp},${date}\n`;
                 fs.appendFileSync(WALLETS_FILE, csvLine);
 
-                console.log(`✅ Wallet added: ${wallet} - ${sakuraAmount} SAKURA (${claimCount} claims)`);
+                console.log(`✅ Wallet added: ${wallet} - ${sakuraAmount} CYBR (${claimCount} claims)`);
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ success: true, message: 'Wallet saved successfully' }));
