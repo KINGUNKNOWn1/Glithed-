@@ -3,10 +3,620 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transformerrs</title>
-    <link rel="icon" type="image/x-icon" href="logos/favicon.ico">
-    <link rel="stylesheet" href="style.css">
+    <title>GLITCH - Global Mission</title>
+    <link rel="icon" type="image/png" href="logos/favicon-16x16.png">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Matrix Rain Background */
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #9d4edd;
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.5);
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .header-video {
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
+            border: 2px solid #5a189a;
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+            object-fit: cover;
+            opacity: 0.8;
+            transition: all 0.3s;
+        }
+
+        .header-video:hover {
+            opacity: 1;
+            box-shadow: 0 0 40px rgba(199, 125, 255, 0.8);
+            transform: scale(1.05);
+        }
+
+        .header-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            color: #c77dff;
+            text-shadow: 0 0 20px #c77dff, 0 0 40px #c77dff;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px #c77dff, 0 0 40px #c77dff; }
+            50% { text-shadow: 0 0 30px #c77dff, 0 0 60px #c77dff, 0 0 80px #c77dff; }
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #7b2cbf;
+            margin-top: 10px;
+            text-shadow: 0 0 10px #7b2cbf;
+        }
+
+        /* Left Panel - Token Stats */
+        .left-panel {
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #5a189a;
+            box-shadow: 0 0 50px rgba(90, 24, 154, 0.7);
+            padding: 25px;
+            border-radius: 10px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 24px;
+            color: #c77dff;
+            text-shadow: 0 0 10px #c77dff;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #5a189a;
+            padding-bottom: 10px;
+        }
+
+        .stat-card {
+            background: rgba(157, 78, 221, 0.1);
+            border: 2px solid #9d4edd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+            transform: scale(1.02);
+        }
+
+        .stat-label {
+            color: #c77dff;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 5px #c77dff;
+        }
+
+        .stat-value {
+            color: #e0aaff;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #e0aaff;
+        }
+
+        .stat-value.positive { color: #10b981; }
+        .stat-value.negative { color: #ef4444; }
+        .loading { color: #fbbf24; animation: pulse 1s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .go-token-btn {
+            width: 100%;
+            padding: 15px;
+            background: rgba(157, 78, 221, 0.2);
+            border: 2px solid #9d4edd;
+            color: #c77dff;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #c77dff;
+            transition: all 0.3s;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .go-token-btn:hover {
+            background: rgba(157, 78, 221, 0.4);
+            box-shadow: 0 0 30px #9d4edd;
+            transform: scale(1.05);
+        }
+
+        /* Center Panel - World Map */
+        .center-panel {
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #5a189a;
+            box-shadow: 0 0 50px rgba(90, 24, 154, 0.7);
+            padding: 25px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .world-map {
+            width: 100%;
+            max-width: 900px;
+            height: 450px;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(157, 78, 221, 0.1), rgba(0, 0, 0, 0.9));
+            border: 2px solid #5a189a;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(157, 78, 221, 0.2);
+        }
+
+        #earthCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #countryMarkers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .country-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: all;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .country-marker.locked {
+            opacity: 0.3;
+        }
+
+        .country-marker.active {
+            animation: markerPulse 2s infinite;
+        }
+
+        .marker-dot {
+            width: 16px;
+            height: 16px;
+            background: #5a189a;
+            border: 2px solid #9d4edd;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #9d4edd;
+        }
+
+        .marker-dot.active {
+            background: #c77dff;
+            border-color: #e0aaff;
+            box-shadow: 0 0 20px #c77dff, 0 0 40px #c77dff;
+        }
+
+        .marker-label {
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #c77dff;
+            text-shadow: 0 0 10px #c77dff;
+            white-space: nowrap;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #9d4edd;
+            display: none;
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.8);
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .marker-label .code-display-text {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #e0aaff;
+            text-shadow: 0 0 15px #e0aaff;
+            margin: 8px 0;
+            cursor: pointer;
+            user-select: all;
+        }
+
+        .marker-label .code-display-text:hover {
+            color: #fff;
+            text-shadow: 0 0 20px #fff;
+        }
+
+        .marker-label .country-name-label {
+            font-size: 11px;
+            color: #7b2cbf;
+            margin-bottom: 5px;
+        }
+
+        .marker-label .copy-hint {
+            font-size: 10px;
+            color: #9d4edd;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+
+        .country-marker.active .marker-label {
+            display: block;
+            animation: labelPop 0.5s ease-out;
+        }
+
+        @keyframes labelPop {
+            0% { transform: translateX(-50%) scale(0); opacity: 0; }
+            50% { transform: translateX(-50%) scale(1.1); }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes markerPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        /* Scan line effect for extra cyber look */
+        .world-map::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(157, 78, 221, 0.05) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: scanline 8s linear infinite;
+            z-index: 10;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(450px); }
+        }
+
+        /* Hologram effect */
+        .world-map::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(199, 125, 255, 0.03),
+                transparent
+            );
+            pointer-events: none;
+            animation: hologram 3s ease-in-out infinite;
+            z-index: 9;
+        }
+
+        @keyframes hologram {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .code-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #c77dff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #c77dff;
+            animation: markerPulse 1.5s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes markerPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; }
+        }
+
+        .mission-info {
+            margin-top: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .mission-status {
+            font-size: 20px;
+            color: #c77dff;
+            text-shadow: 0 0 10px #c77dff;
+            margin-bottom: 15px;
+        }
+
+        .next-milestone {
+            font-size: 16px;
+            color: #7b2cbf;
+            text-shadow: 0 0 5px #7b2cbf;
+        }
+
+        /* Right Panel - Codes & Rewards */
+        .right-panel {
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #5a189a;
+            box-shadow: 0 0 50px rgba(90, 24, 154, 0.7);
+            padding: 25px;
+            border-radius: 10px;
+            overflow-y: auto;
+        }
+
+        .code-section {
+            background: rgba(157, 78, 221, 0.1);
+            border: 2px solid #9d4edd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .country-flag {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .country-name {
+            font-size: 18px;
+            color: #c77dff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #c77dff;
+        }
+
+        .code-display {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #5a189a;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .code-text {
+            font-size: 28px;
+            color: #e0aaff;
+            font-weight: bold;
+            text-shadow: 0 0 15px #e0aaff;
+            letter-spacing: 4px;
+        }
+
+        .code-locked {
+            font-size: 24px;
+            color: #5a189a;
+            text-shadow: 0 0 10px #5a189a;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(157, 78, 221, 0.05);
+            border: 2px solid #9d4edd;
+            color: #c77dff;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border-radius: 5px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .code-input::placeholder {
+            color: rgba(199, 125, 255, 0.4);
+        }
+
+        .code-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+        }
+
+        .claim-btn {
+            width: 100%;
+            padding: 15px;
+            background: rgba(157, 78, 221, 0.2);
+            border: 2px solid #9d4edd;
+            color: #c77dff;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #c77dff;
+            transition: all 0.3s;
+            border-radius: 5px;
+        }
+
+        .claim-btn:hover:not(:disabled) {
+            background: rgba(157, 78, 221, 0.4);
+            box-shadow: 0 0 30px #9d4edd;
+            transform: scale(1.05);
+        }
+
+        .claim-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .reward-info {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #7b2cbf;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            color: #10b981;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            display: block;
+        }
+
+        .wallet-section {
+            background: rgba(157, 78, 221, 0.1);
+            border: 2px solid #9d4edd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .wallet-section.active {
+            display: block;
+        }
+
+        .wallet-input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(157, 78, 221, 0.05);
+            border: 2px solid #9d4edd;
+            color: #c77dff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border-radius: 5px;
+            margin-bottom: 12px;
+        }
+
+        .wallet-input::placeholder {
+            color: rgba(199, 125, 255, 0.4);
+        }
+
+        .total-rewards {
+            text-align: center;
+            font-size: 24px;
+            color: #10b981;
+            text-shadow: 0 0 15px #10b981;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* Demo Controls */
+        .demo-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #9d4edd;
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .demo-controls h3 {
+            color: #c77dff;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #c77dff;
+        }
+
+        .demo-btn {
+            padding: 8px 16px;
+            background: rgba(157, 78, 221, 0.2);
+            border: 2px solid #9d4edd;
+            color: #c77dff;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #c77dff;
+            transition: all 0.3s;
+            border-radius: 4px;
+            margin: 5px;
+        }
+
+        .demo-btn:hover {
+            background: rgba(157, 78, 221, 0.4);
+            box-shadow: 0 0 15px #9d4edd;
+        }
+
+        .demo-btn.active {
+            background: rgba(199, 125, 255, 0.3);
+            border-color: #c77dff;
+        }
+
+        /* Social Links */
         .social-links {
             position: fixed;
             bottom: 20px;
@@ -16,6 +626,7 @@
             gap: 20px;
             z-index: 10000;
         }
+
         .social-links a {
             display: flex;
             align-items: center;
@@ -23,110 +634,159 @@
             width: 50px;
             height: 50px;
             background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #0f0;
+            border: 2px solid #9d4edd;
             border-radius: 50%;
             transition: all 0.3s;
+            text-decoration: none;
         }
+
         .social-links a:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 20px #0f0;
+            box-shadow: 0 0 20px #9d4edd;
         }
-        .social-links img {
-            width: 35px;
-            height: 35px;
-            filter: drop-shadow(0 0 5px #00ff00);
-        }
+
         .social-icon {
             font-size: 24px;
             font-weight: bold;
-            color: #00ff00;
-            text-shadow: 0 0 10px #00ff00;
-            font-family: Arial, sans-serif;
+            color: #c77dff;
+            text-shadow: 0 0 10px #c77dff;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                overflow-y: auto;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .left-panel, .right-panel {
+                max-height: none;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .header-video {
+                width: 250px;
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .header-video {
+                width: 200px;
+                height: 150px;
+            }
         }
     </style>
 </head>
 <body>
     <canvas id="matrixCanvas"></canvas>
-    <div id="background"></div>
 
-    <!-- Main Terminal Window -->
-    <div class="window terminal-window" id="mainTerminal">
-        <div class="window-header">
-            <span class="window-title">SYSTEM_TERMINAL_V2.4</span>
-            <div class="window-controls">
-                <span class="control minimize">_</span>
-                <span class="control maximize">□</span>
-                <span class="control close">×</span>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <video class="header-video" autoplay loop muted playsinline>
+                <source src="videos/558.mp4" type="video/mp4">
+            </video>
+
+            <div class="header-content">
+                <h1>🌍 GLITCH GLOBAL MISSION</h1>
+                <div class="subtitle">// CODES UNLOCK WORLDWIDE AS MCAP GROWS</div>
+            </div>
+
+            <video class="header-video" autoplay loop muted playsinline>
+                <source src="videos/606.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- Left Panel - Token Stats -->
+        <div class="left-panel">
+            <div class="panel-title">📊 $GLITCH TOKEN</div>
+
+            <div class="stat-card">
+                <div class="stat-label">MARKET CAP</div>
+                <div class="stat-value loading" id="mcap">Loading...</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">PRICE</div>
+                <div class="stat-value loading" id="price">Loading...</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">24H VOLUME</div>
+                <div class="stat-value loading" id="volume">Loading...</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">24H CHANGE</div>
+                <div class="stat-value loading" id="change">Loading...</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">TOTAL BUYS</div>
+                <div class="stat-value positive loading" id="buys">Loading...</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">TOTAL SELLS</div>
+                <div class="stat-value negative loading" id="sells">Loading...</div>
+            </div>
+
+            <button class="go-token-btn" onclick="goToToken()">VIEW TOKEN →</button>
+        </div>
+
+        <!-- Center Panel - World Map -->
+        <div class="center-panel">
+            <div class="world-map" id="worldMap">
+                <!-- Animated 3D Earth Globe -->
+                <canvas id="earthCanvas" width="900" height="450"></canvas>
+
+                <!-- Country Markers (positioned absolutely over the globe) -->
+                <div id="countryMarkers"></div>
+            </div>
+
+            <div class="mission-info">
+                <div class="mission-status" id="missionStatus">⏳ AWAITING NEXT MILESTONE...</div>
+                <div class="next-milestone" id="nextMilestone">Next code unlocks at +$10,000 MCAP</div>
             </div>
         </div>
-        <div class="window-content terminal-content">
-            <div id="output"></div>
-            <div class="input-line">
-                <span class="prompt">root@cyberpunk:~$</span>
-                <input type="text" id="terminalInput" class="terminal-input" maxlength="6" placeholder="Enter code..." autocomplete="off" autofocus>
-            </div>
-        </div>
-    </div>
 
-    <!-- Encrypting Window -->
-    <div class="window encrypting-window" id="encryptWindow" style="left: 60%; top: 10%;">
-        <div class="window-header">
-            <span class="window-title">ENCRYPTION_MODULE</span>
-        </div>
-        <div class="window-content">
-            <div class="encrypt-status">
-                <div class="status-text">ENCRYPTING DATA...</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="encryptProgress"></div>
-                </div>
-                <div class="encrypt-output" id="encryptOutput"></div>
-            </div>
-        </div>
-    </div>
+        <!-- Right Panel - Codes -->
+        <div class="right-panel">
+            <div class="panel-title">🔐 UNLOCK CODES</div>
 
-    <!-- System Monitor Window -->
-    <div class="window monitor-window" id="monitorWindow" style="left: 5%; top: 50%;">
-        <div class="window-header">
-            <span class="window-title">SYSTEM_MONITOR</span>
-        </div>
-        <div class="window-content">
-            <div class="monitor-grid">
-                <div class="monitor-item">
-                    <span class="monitor-label">CPU:</span>
-                    <span class="monitor-value" id="cpu">0%</span>
-                </div>
-                <div class="monitor-item">
-                    <span class="monitor-label">RAM:</span>
-                    <span class="monitor-value" id="ram">0%</span>
-                </div>
-                <div class="monitor-item">
-                    <span class="monitor-label">NET:</span>
-                    <span class="monitor-value" id="net">0 MB/s</span>
-                </div>
-                <div class="monitor-item">
-                    <span class="monitor-label">STATUS:</span>
-                    <span class="monitor-value status-active">ACTIVE</span>
+            <div id="codesContainer">
+                <!-- Codes will be dynamically added here -->
+                <div class="code-section">
+                    <div class="country-flag">🔒</div>
+                    <div class="country-name">AWAITING MILESTONE</div>
+                    <div class="code-display">
+                        <div class="code-locked">◆◆◆◆◆◆◆◆</div>
+                    </div>
+                    <div class="reward-info">Complete missions to unlock codes</div>
                 </div>
             </div>
+
+            <!-- Wallet Submission Section -->
+            <div class="wallet-section" id="walletSection">
+                <div class="panel-title" style="font-size: 20px; margin-bottom: 15px;">💰 CLAIM REWARDS</div>
+                <div class="total-rewards" id="totalRewards">0.00 SOL</div>
+                <input type="text" class="wallet-input" id="walletInput" placeholder="// ENTER SOLANA WALLET ADDRESS">
+                <button class="claim-btn" onclick="submitWallet()">SUBMIT WALLET</button>
+                <div class="message" id="walletMessage"></div>
+            </div>
         </div>
-    </div>
-
-    <!-- Access Granted/Denied Overlay -->
-    <div id="accessOverlay" class="access-overlay hidden">
-        <div class="access-text"></div>
-    </div>
-
-    <!-- Glitch Effect Overlay -->
-    <div id="glitchOverlay"></div>
-
-    <!-- Social Media Links -->
-    <div class="social-links">
-        <a href="https://x.com/0xtransformerrs?s=21" target="_blank" rel="noopener noreferrer">
-            <span class="social-icon">𝕏</span>
-        </a>
-        <a href="https://t.me/Cybr_sol" target="_blank" rel="noopener noreferrer">
-            <span class="social-icon">✈</span>
-        </a>
     </div>
 
     <script src="script.js"></script>
