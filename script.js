@@ -755,57 +755,9 @@ function flashEarthGlow() {
     }, 500);
 }
 
-// DEMO MODE - Auto unlock countries every 5 seconds
-let demoMode = true; // Set to false to disable demo
-let demoInterval;
-
-function startDemo() {
-    if (!demoMode) return;
-
-    console.log('🎮 DEMO MODE ACTIVE - Countries will unlock every 5 seconds');
-
-    let demoCountryIndex = 0;
-
-    demoInterval = setInterval(() => {
-        if (demoCountryIndex < countries.length) {
-            console.log(`🎯 Demo: Unlocking ${countries[demoCountryIndex].name}...`);
-
-            // Simulate milestone reached
-            const increase = 10000;
-            const newMcap = (demoCountryIndex + 1) * 10000;
-
-            // Update mission status
-            document.getElementById('missionStatus').textContent = `🎯 MILESTONE REACHED! +$${formatNumber(increase)}`;
-
-            // Unlock country
-            unlockCountry(countries[demoCountryIndex]);
-            currentCountryIndex++;
-            demoCountryIndex++;
-
-            // Update next milestone
-            updateNextMilestone();
-
-            // Play sound
-            playMilestoneSound();
-        } else {
-            clearInterval(demoInterval);
-            console.log('✅ Demo complete! All countries unlocked.');
-            document.getElementById('missionStatus').textContent = '✅ ALL COUNTRIES UNLOCKED!';
-        }
-    }, 5000); // Unlock a new country every 5 seconds
-}
-
 // Initialize on load
 window.addEventListener('DOMContentLoaded', () => {
     init();
-
-    // Start demo after 2 seconds
-    if (demoMode) {
-        setTimeout(() => {
-            showNotification('🎮 DEMO MODE: Countries will unlock automatically!');
-            startDemo();
-        }, 2000);
-    }
 });
 
 // Add CSS animations
