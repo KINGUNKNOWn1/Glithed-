@@ -51,7 +51,7 @@ function drawMatrix() {
 setInterval(drawMatrix, 50);
 
 // Token Data
-const TOKEN_ADDRESS = 'BsySSj4VvnqjSLY3DqkCdh68aGyBdn6wdBBPrY9bpump';
+const TOKEN_ADDRESS = 'CiMBEZ5BGtLiAj1Knyx323CjN6yxkxmstHNiEeKopump';
 let previousMcap = 0;
 let mcapMilestone = 0;
 
@@ -744,7 +744,22 @@ function playSuccessSound() {
 }
 
 function goToToken() {
-    window.open('https://pump.fun/coin/BsySSj4VvnqjSLY3DqkCdh68aGyBdn6wdBBPrY9bpump', '_blank');
+    window.open(`https://pump.fun/coin/${TOKEN_ADDRESS}`, '_blank');
+}
+
+function copyCA() {
+    navigator.clipboard.writeText(TOKEN_ADDRESS).then(() => {
+        showNotification('✅ Contract Address copied to clipboard!');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = TOKEN_ADDRESS;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('✅ Contract Address copied to clipboard!');
+    });
 }
 
 function flashEarthGlow() {
